@@ -5,7 +5,7 @@ def get_mask_card_number(card_number: int) -> str:
     Номер разбит по блокам по 4 цифры
     """
     n = str(card_number)
-    return f'{n[0]}{n[1]}{n[2]}{n[3]} {n[4]}{n[5]}** **** {n[-4]}{n[-3]}{n[-2]}{n[-1]}'
+    return f"{n[0]}{n[1]}{n[2]}{n[3]} {n[4]}{n[5]}** **** {n[-4]}{n[-3]}{n[-2]}{n[-1]}"
 
 
 def get_mask_account(account: int) -> str:
@@ -15,4 +15,4 @@ def get_mask_account(account: int) -> str:
     Видны только последние 4 цифры счета
     """
     n = str(account)
-    return f'**{n[-4]}{n[-3]}{n[-2]}{n[-1]}'
+    return f"**{n[-4]}{n[-3]}{n[-2]}{n[-1]}"
