@@ -41,3 +41,7 @@ exclude = [
     '^venv/',
     '^\.venv/',
 ]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false

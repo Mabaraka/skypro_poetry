@@ -5,15 +5,30 @@ import src.masks as masks
 
 def mask_account_card(account_card: str) -> str:
     """
-    :param account_card: строка, содержащая тип и номер карты или счета
-    :return:возвращает строку с замаскированным номером
-    Для карт и счетов используется разные типы маскировки
+    Принимает строку, содержащую тип и номер карты или счета,
+    и возвращает строку с замаскированным номером.
     """
-    if "Счет" in account_card:
-        return f"Счет {masks.get_mask_account(int(account_card[5:]))}"
+    if not account_card or not isinstance(account_card, str):
+        return "Invalid input"
+
+    if account_card.startswith("Счет"):
+        account_number = "".join([x for x in account_card if x.isdigit()])
+        if not account_number:
+            return "Invalid account format"
+
+        masked_number = masks.get_mask_account(account_number)
+        return f"Счет {masked_number}"
+
     else:
         card_number = "".join([x for x in account_card if x.isdigit()])
-        return f"{account_card.replace(card_number, '')}{masks.get_mask_card_number(int(card_number))}"
+        if not card_number:
+            return "Invalid card format"
+
+        card_type = "".join([x for x in account_card if not x.isdigit()]).strip()
+
+        masked_number = masks.get_mask_card_number(card_number)
+
+        return f"{card_type} {masked_number}"
 
 
 def get_date(iso_date: str) -> str:
