@@ -33,8 +33,23 @@ def mask_account_card(account_card: str) -> str:
 
 def get_date(iso_date: str) -> str:
     """
-    :param iso_date: строка с датой в формате ISO
-    :return: строка с датой в формате "ДД.ММ.ГГГГ"
+    Преобразует дату из ISO формата в формат "ДД.ММ.ГГГГ"
+
+    Args:
+        iso_date: строка с датой в формате ISO
+
+    Returns:
+        строка с датой в формате "ДД.ММ.ГГГГ" или сообщение об ошибке
     """
-    date_obj = datetime.fromisoformat(iso_date)
-    return date_obj.strftime("%d.%m.%Y")
+    if not iso_date or not isinstance(iso_date, str):
+        return "Invalid date format"
+
+    iso_date = iso_date.strip()
+    if not iso_date:
+        return "Invalid date format"
+
+    try:
+        date_obj = datetime.fromisoformat(iso_date)
+        return date_obj.strftime("%d.%m.%Y")
+    except ValueError:
+        return "Invalid date format"

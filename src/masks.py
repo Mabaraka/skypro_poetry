@@ -6,10 +6,14 @@ def get_mask_card_number(card_number: str) -> str:
     Принимает номер карты (строка) и возвращает маску в формате
     XXXX XX** **** XXXX, где X - это цифра номера.
     """
-    if not card_number or not card_number.isdigit():
+    if card_number is None:
         return "Invalid card number"
 
-    n = card_number.strip()
+    n = str(card_number).strip()
+
+    if not n or not n.isdigit():
+        return "Invalid card number"
+
     if len(n) < 16:
         return "Card number too short"
 
