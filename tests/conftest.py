@@ -66,3 +66,49 @@ def transactions_datetime_objects() -> List[Dict[str, Any]]:
         {"id": 3, "date": datetime(2024, 3, 15, 8, 0)},
         {"id": 4, "date": datetime(2024, 3, 16, 12, 0)},
     ]
+
+
+@pytest.fixture
+def transactions_with_currency() -> List[Dict[str, Any]]:
+    """транзакции с включенным словарем operationAmount, в котором хранятся валюта"""
+    return [
+        {
+            "id": 1,
+            "state": "EXECUTED",
+            "date": "2024-03-15",
+            "operationAmount": {"amount": 1000, "currency": {"name": "USD", "code": "USD"}},
+        },
+        {
+            "id": 2,
+            "state": "EXECUTED",
+            "date": "2024-03-16",
+            "operationAmount": {"amount": 1200, "currency": {"name": "RUB", "code": "RUB"}},
+        },
+        {
+            "id": 3,
+            "state": "EXECUTED",
+            "date": "2024-03-17",
+            "operationAmount": {"amount": 1220, "currency": {"name": "JIN", "code": "JIN"}},
+        },
+        {
+            "id": 4,
+            "state": "EXECUTED",
+            "date": "2025-03-17",
+            "operationAmount": {"amount": 13320, "currency": {"name": "USD", "code": "USD"}},
+        },
+        {"id": 5, "state": "EXECUTED", "date": "2026-03-17", "operationAmount": {"amount": 0, "currency": None}},
+        {"id": 6, "state": "EXECUTED", "date": "2026-03-18", "operationAmount": None},
+        {"id": 6, "state": "EXECUTED", "date": "2026-03-18"},
+    ]
+
+
+@pytest.fixture
+def transaction_with_descriptions() -> List[Dict[str, Any]]:
+    """транзакции с описаниями"""
+    return [
+        {"id": 1, "state": "EXECUTED", "date": "2024-03-15", "description": "первая транзакция"},
+        {"id": 2, "state": "EXECUTED", "date": "2024-03-16", "description": "вторая транзакция"},
+        {"id": 3, "state": "EXECUTED", "date": "2024-03-17", "description": "третья транзакция"},
+        {"id": 4, "state": "EXECUTED", "date": "2025-03-17", "description": None},
+        {"id": 5, "state": "EXECUTED", "date": "2026-03-18"},
+    ]

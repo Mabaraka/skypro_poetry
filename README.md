@@ -1,6 +1,6 @@
 # 🔐 Виджет банковских операций клиента
 
-Утилита для маскировки номеров банковских карт и счетов, а также фильтрации и сортировки финансовых операций.
+Утилита для маскировки номеров банковских карт и счетов, а также фильтрации, сортировки и генерации финансовых операций.
 
 ---
 
@@ -12,6 +12,7 @@
 - **Фильтрация** списка операций по статусу
 - **Сортировка** операций по дате
 - **Форматирование** дат из ISO-формата в читаемый вид
+- **Генерация** номеров карт, итерация по транзакциям и их описаниям
 
 ---
 
@@ -41,12 +42,14 @@ your-repo/
 ├── src/
 │   ├── masks.py         # Маскировка номеров карт и счетов
 │   ├── processing.py    # Фильтрация и сортировка операций
-│   └── widget.py        # Вспомогательные функции (маска + дата)
+│   ├── widget.py        # Вспомогательные функции (маска + дата)
+│   └── generators.py    # Генераторы для итерации по транзакциям
 ├── tests/
 │   ├── conftest.py      # Фикстуры для всех тестов
 │   ├── test_masks.py    # Тесты модуля masks
 │   ├── test_processing.py  # Тесты модуля processing
-│   └── test_widget.py   # Тесты модуля widget
+│   ├── test_widget.py   # Тесты модуля widget
+│   └── test_generators.py  # Тесты модуля generators
 └── README.md
 ```
 
@@ -153,6 +156,85 @@ sort_by_date(operations, reverse=False)
 
 ---
 
+### Фильтрация транзакций по валюте
+
+```python
+from src.generators import filter_by_currency
+
+transactions = [
+    {
+        "id": 1,
+        "description": "Перевод организации",
+        "operationAmount": {"amount": "9824.07", "currency": {"name": "USD", "code": "USD"}},
+    },
+    {
+        "id": 2,
+        "description": "Социальный перевод",
+        "operationAmount": {"amount": "30242.83", "currency": {"name": "руб.", "code": "RUB"}},
+    },
+    {
+        "id": 3,
+        "description": "Перевод со счета на счет",
+        "operationAmount": {"amount": "150.00", "currency": {"name": "USD", "code": "USD"}},
+    },
+]
+
+usd_transactions = filter_by_currency(transactions, "USD")
+for t in usd_transactions:
+    print(t["id"])
+# → 1
+# → 3
+```
+
+Функция возвращает генератор, который поочерёдно выдаёт только те транзакции, в которых код валюты совпадает с заданным. Транзакции с отсутствующим или некорректным полем валюты пропускаются.
+
+---
+
+### Получение описаний транзакций
+
+```python
+from src.generators import transaction_descriptions
+
+transactions = [
+    {"id": 1, "description": "Перевод организации"},
+    {"id": 2, "description": "Открытие вклада"},
+    {"id": 3, "description": "Перевод со счета на счет"},
+]
+
+descriptions = transaction_descriptions(transactions)
+print(next(descriptions))  # → "Перевод организации"
+print(next(descriptions))  # → "Открытие вклада"
+print(next(descriptions))  # → "Перевод со счета на счет"
+```
+
+Функция возвращает генератор, который поочерёдно выдаёт строку `description` из каждой транзакции. Транзакции без поля `description` пропускаются.
+
+---
+
+### Генератор номеров банковских карт
+
+```python
+from src.generators import card_number_generator
+
+for card in card_number_generator(1, 5):
+    print(card)
+# → "0000 0000 0000 0001"
+# → "0000 0000 0000 0002"
+# → "0000 0000 0000 0003"
+# → "0000 0000 0000 0004"
+# → "0000 0000 0000 0005"
+
+# Конкретный диапазон
+for card in card_number_generator(9999999999999998, 9999999999999999):
+    print(card)
+# → "9999 9999 9999 9998"
+# → "9999 9999 9999 9999"
+```
+
+Генерирует номера карт в формате `XXXX XXXX XXXX XXXX` в заданном диапазоне от `0000 0000 0000 0001` до `9999 9999 9999 9999`. Если `start > end`, генератор не выдаёт ни одного значения.
+
+---
+
 ## 🧪 Тестирование
 
 ### Запуск тестов
@@ -177,7 +259,7 @@ pip install pytest pytest-cov
 
 ### Структура тестов
 
-Тесты покрывают все публичные функции проекта и организованы по трём файлам, соответствующим модулям `src/`.
+Тесты покрывают все публичные функции проекта и организованы по четырём файлам, соответствующим модулям `src/`.
 
 **`conftest.py`** содержит общие фикстуры, переиспользуемые всеми тест-файлами:
 
@@ -189,6 +271,8 @@ pip install pytest pytest-cov
 | `transactions_for_sort` | Операции с разными датами для проверки сортировки |
 | `transactions_with_bad_dates` | Смесь валидных, невалидных дат и отсутствующих ключей |
 | `transactions_datetime_objects` | Операции, где `date` — объект `datetime` |
+| `transactions_with_currency` | Операции с полем `operationAmount.currency` для фильтрации по валюте |
+| `transaction_with_descriptions` | Операции с полем `description` для проверки генератора описаний |
 
 ---
 
@@ -222,6 +306,18 @@ pip install pytest pytest-cov
 
 ---
 
+**`test_generators.py`** — тесты генераторов:
+
+| Тест | Что проверяет |
+|---|---|
+| `test_filter_by_currency` | Фильтрацию по кодам валют `USD`, `EUR`, `RUB` (параметризованный) |
+| `test_filter_by_currency_empty_list` | Поведение на пустом списке |
+| `test_transaction_descriptions` | Последовательную выдачу описаний через `next()` |
+| `test_transaction_descriptions_empty_list` | Что на пустом списке сразу бросается `StopIteration` |
+| `test_card_number_generator` | Генерацию в диапазонах: начало, конец, одно значение, максимальное число, `start > end` (параметризованный) |
+
+---
+
 ## 📌 Справочник функций
 
 | Функция | Модуль | Описание |
@@ -232,6 +328,9 @@ pip install pytest pytest-cov
 | `get_date(iso_date)` | `widget` | Дата из ISO в `ДД.ММ.ГГГГ` |
 | `filter_by_state(data, state)` | `processing` | Фильтрация по статусу операции |
 | `sort_by_date(data, reverse)` | `processing` | Сортировка по дате |
+| `filter_by_currency(transactions, currency)` | `generators` | Генератор транзакций с заданной валютой |
+| `transaction_descriptions(transactions)` | `generators` | Генератор описаний транзакций |
+| `card_number_generator(start, end)` | `generators` | Генератор номеров карт в формате `XXXX XXXX XXXX XXXX` |
 
 ---
 
