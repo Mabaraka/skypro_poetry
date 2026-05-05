@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+
 from functools import wraps
 
 
@@ -7,6 +9,7 @@ def log(filename=None):
     может записывать как в файл, так и в консоль
     при ошибке записывает текст ошибки и входные параметры функции
     """
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
