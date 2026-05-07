@@ -1,5 +1,7 @@
 import json
 
+from src.external_api import convert_currency
+
 
 def convert_json(json_path):
     """
@@ -17,3 +19,20 @@ def convert_json(json_path):
     if type(data) is not list:
         return []
     return data
+
+
+def get_amount(transactions):
+    """
+    метод предстовляет из себя способ получить количество рублей
+    из транзакции
+
+    :param transactions: словарь представляющий транзакцию
+    :return: float количество в рублях
+    """
+    currency_code = transactions.get("operationAmount").get("currency").get("code")
+    amount = transactions.get("operationAmount").get("amount")
+
+    if currency_code == "RUB":
+        return float(amount)
+    else:
+        return convert_currency(currency_code, amount).get("result")
