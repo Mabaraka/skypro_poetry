@@ -54,7 +54,7 @@ def test_get_amount_rub(transaction_amount_rub):
 
 def test_get_amount_eur(transaction_amount_eur, exchange_rate_data_eur):
     with patch("src.utils.convert_currency") as external_mock:
-        external_mock.return_value = exchange_rate_data_eur
+        external_mock.return_value = exchange_rate_data_eur.get("result")
         amount = get_amount(transaction_amount_eur)
 
         assert "EUR" == exchange_rate_data_eur.get("query").get("from")
@@ -63,7 +63,7 @@ def test_get_amount_eur(transaction_amount_eur, exchange_rate_data_eur):
 
 def test_get_amount_usd(transaction_amount_usd, exchange_rate_data_usd):
     with patch("src.utils.convert_currency") as external_mock:
-        external_mock.return_value = exchange_rate_data_usd
+        external_mock.return_value = exchange_rate_data_usd.get("result")
         amount = get_amount(transaction_amount_usd)
 
         assert "USD" == exchange_rate_data_usd.get("query").get("from")

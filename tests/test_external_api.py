@@ -20,4 +20,4 @@ def test_convert_currency(mock_getenv, mock_requests_get):
 
     mock_requests_get.assert_called_once_with(expected_url, headers={"apikey": "test_api_key"})
 
-    assert result == {"result": 1500}
+    assert result == 1500

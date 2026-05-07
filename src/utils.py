@@ -35,4 +35,4 @@ def get_amount(transactions):
     if currency_code == "RUB":
         return float(amount)
     else:
-        return convert_currency(currency_code, amount).get("result")
+        return convert_currency(currency_code, amount)

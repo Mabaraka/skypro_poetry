@@ -12,7 +12,7 @@ def convert_currency(from_, amount_, to_="RUB"):
     :param from_: из какой валюты
     :param amount_: количество
     :param to_: в какую валюту
-    :return: dict, нас интересует ключ result (итоговый amount)
+    :return: float, итоговый amount
     """
     load_dotenv()
     api_key = os.getenv("APILayer_API_KEY")
@@ -22,4 +22,4 @@ def convert_currency(from_, amount_, to_="RUB"):
 
     response = requests.get(url, headers=headers)
 
-    return response.json()
+    return response.json().get("result")
