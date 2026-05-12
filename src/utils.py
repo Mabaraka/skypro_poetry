@@ -4,6 +4,11 @@ import logging
 from src.external_api import convert_currency
 
 logger = logging.getLogger(__name__)
+file_handler = logging.FileHandler("logs/utils.log", encoding="utf-8", mode="w")
+file_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+file_handler.setFormatter(file_formatter)
+logger.addHandler(file_handler)
+logger.setLevel(logging.DEBUG)
 
 
 def convert_json(json_path):
