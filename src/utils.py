@@ -1,6 +1,14 @@
 import json
+import logging
 
 from src.external_api import convert_currency
+
+logger = logging.getLogger(__name__)
+file_handler = logging.FileHandler("logs/utils.log", encoding="utf-8", mode="w")
+file_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+file_handler.setFormatter(file_formatter)
+logger.addHandler(file_handler)
+logger.setLevel(logging.DEBUG)
 
 
 def convert_json(json_path):
@@ -14,10 +22,13 @@ def convert_json(json_path):
     try:
         with open(json_path, "r", encoding="utf-8") as f:
             data = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        logger.error(f"Произошла ошибка {e}: путь к файлу {json_path}")
         return []
     if type(data) is not list:
+        logger.error("Формат JSON-файла не корректен, считывание данных прошло не успешно")
         return []
+    logger.info("Даннные успешно прочитаны из файла JSON")
     return data
 
 
