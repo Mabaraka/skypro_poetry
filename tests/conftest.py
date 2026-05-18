@@ -244,3 +244,17 @@ def sample_operations():
         {"id": 5, "description": None},
         {"id": 6},
     ]
+
+
+@pytest.fixture
+def mock_transaction_list():
+    """Фикстура с одной тестовой транзакцией в формате словаря."""
+    return [
+        {
+            "date": "2019-12-08T22:46:21.323831",
+            "description": "Открытие вклада",
+            "from": "",
+            "to": "Счет 64686453677564874321",
+            "operationAmount": {"amount": "40542", "currency": {"name": "руб.", "code": "RUB"}},
+        }
+    ]
