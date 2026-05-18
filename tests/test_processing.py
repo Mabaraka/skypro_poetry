@@ -1,6 +1,7 @@
 import pytest
 
 from src.processing import filter_by_state
+from src.processing import process_bank_search
 from src.processing import sort_by_date
 
 
@@ -88,3 +89,37 @@ def test_sort_does_not_mutate(transactions_for_sort):
     original = transactions_for_sort.copy()
     sort_by_date(transactions_for_sort)
     assert transactions_for_sort == original
+
+
+def test_process_bank_search_standard(sample_operations):
+    """Тест стандартного подсчета для существующих и отсутствующих категорий."""
+    categories = ["Перевод организации", "Открытие вклада", "Перевод частному лицу"]
+
+    result = process_bank_search(sample_operations, categories)
+
+    assert result == {"Перевод организации": 2, "Открытие вклада": 1, "Перевод частному лицу": 0}
+
+
+def test_process_bank_search_empty_data():
+    """Тест работы функции с пустым списком операций."""
+    categories = ["Перевод организации"]
+
+    result = process_bank_search([], categories)
+
+    assert result == {"Перевод организации": 0}
+
+
+def test_process_bank_search_empty_categories(sample_operations):
+    """Тест работы функции с пустым списком искомых категорий."""
+    result = process_bank_search(sample_operations, [])
+
+    assert result == {}
+
+
+def test_process_bank_search_missing_description(sample_operations):
+    """Тест, что функции не падают, если в данных есть None или отсутствует ключ."""
+    categories = ["Покупка авиабилетов"]
+
+    result = process_bank_search(sample_operations, categories)
+
+    assert result == {"Покупка авиабилетов": 1}
