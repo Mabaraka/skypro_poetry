@@ -1,3 +1,4 @@
+from collections import Counter
 from datetime import datetime
 from typing import Any
 from typing import Dict
@@ -35,3 +36,13 @@ def sort_by_date(data: List[Dict[str, Any]], reverse: bool = True) -> List[Dict[
         return datetime.min
 
     return sorted(data, key=lambda x: parse_date(x.get("date")), reverse=reverse)
+
+
+def process_bank_search(data, categories):
+    """
+    Подсчитывает количество банковских операций для каждой заданной категории
+    с использованием collections.Counter.
+    """
+    descriptions = (operations.get("description") for operations in data if operations.get("description"))
+    counts = Counter(descriptions)
+    return {category: counts[category] for category in categories}

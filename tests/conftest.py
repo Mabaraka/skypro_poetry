@@ -232,3 +232,29 @@ def mock_excel_data():
         "to": ["Счет 39745660563456619397", "Счет 23294994494356835683"],
         "description": ["Перевод организации", "Открытие вклада"],
     }
+
+
+@pytest.fixture
+def sample_operations():
+    return [
+        {"id": 1, "description": "Перевод организации"},
+        {"id": 2, "description": "Открытие вклада"},
+        {"id": 3, "description": "Перевод организации"},
+        {"id": 4, "description": "Покупка авиабилетов"},
+        {"id": 5, "description": None},
+        {"id": 6},
+    ]
+
+
+@pytest.fixture
+def mock_transaction_list():
+    """Фикстура с одной тестовой транзакцией в формате словаря."""
+    return [
+        {
+            "date": "2019-12-08T22:46:21.323831",
+            "description": "Открытие вклада",
+            "from": "",
+            "to": "Счет 64686453677564874321",
+            "operationAmount": {"amount": "40542", "currency": {"name": "руб.", "code": "RUB"}},
+        }
+    ]
